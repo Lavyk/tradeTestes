@@ -48,13 +48,13 @@
         }
     ],
     "telegram": {
-        "enabled": false,
+        "enabled": true,
         "token": "1817290703:AAGnY8uNxmhiLmseOrxt22jgxA_FKa-HrWA",
         "chat_id": "1768966626"
     },
     "api_server": {
         "enabled": true,
-        "listen_ip_address": "0.0.0.0",
+        "listen_ip_address": "127.0.0.1",
         "listen_port": 8080,
         "verbosity": "error",
         "enable_openapi": false,
