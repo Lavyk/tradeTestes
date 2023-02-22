@@ -48,7 +48,7 @@ class TPct(IStrategy):
     # }
 
     minimal_roi = {
-        "0": 0.003
+        "0": 0.03
     }
 
     stoploss = -0.05
@@ -58,7 +58,7 @@ class TPct(IStrategy):
     # trailing_stop_positive = 0.01
     # trailing_stop_positive_offset = 0.0  # Disabled / not configured
 
-    timeframe = '1m'
+    timeframe = '1d'
 
     # Run "populate_indicators()" only for new candle.
     # process_only_new_candles = True
@@ -85,34 +85,8 @@ class TPct(IStrategy):
         'stoploss_on_exchange': False
     }
 
-    plot_config = {
-        'main_plot': {
-            'tema': {},
-            'sar': {'color': 'white'},
-        }
-    }
-
-    # def informative_pairs(self):
-    #     pairs = self.dp.current_whitelist()
-    #     informative_pairs = [(pair, '5m') for pair in pairs]
-    #     return informative_pairs
-
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        """
-        Adds several different TA indicators to the given DataFrame
-
-        Performance Note: For the best performance be frugal on the number of indicators
-        you are using. Let uncomment only the indicator you are using in your strategies
-        or your hyperopt configuration, otherwise you will waste your memory and CPU usage.
-        :param dataframe: Dataframe with data from the exchange
-        :param metadata: Additional information, like the currently traded pair
-        :return: a Dataframe with all mandatory indicators for the strategies
-        """
-
-        # Momentum Indicators
-        # ------------------------------------
-
-        dataframe["delta"] = 100 - ((dataframe['close'] / (((dataframe['high'] - dataframe['low'])/2) + dataframe['low'])) * 100)
+        dataframe["delta"] = 100 - (dataframe['close'] / ((dataframe['high'] + dataframe['low'])/2)*100)
         if('venda_alvo' not in dataframe.columns):
             dataframe['venda_alvo'] = 0.0
         return dataframe
@@ -122,7 +96,7 @@ class TPct(IStrategy):
         dataframe.loc[
             (
                 (dataframe['venda_alvo'] == 0.0) &
-                (dataframe['delta'] > 0) &
+                (dataframe['delta'] > 2) &
                 (dataframe['volume'] > 0)  # Make sure Volume is not 0
             ),
             ['enter_long', 'venda_alvo']] = (1, np.sum([dataframe['close'], np.multiply(dataframe['close'], 0.01)]))
@@ -137,7 +111,7 @@ class TPct(IStrategy):
         :return: DataFrame with exit columns populated
         """
 
-        # print(dataframe['venda_alvo'])  
+        print(metadata)  
 
         dataframe.loc[
             (
