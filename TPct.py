@@ -86,13 +86,13 @@ class TPct(IStrategy):
     }
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        dataframe["delta"] = 100 - (dataframe['close'] / ((dataframe['high'] + dataframe['low'])/2)*100)
         if('venda_alvo' not in dataframe.columns):
             dataframe['venda_alvo'] = 0.0
         return dataframe
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
+        dataframe["delta"] = 100 - (dataframe['close'] / ((dataframe['high'] + dataframe['low'])/2)*100)
         dataframe.loc[
             (
                 (dataframe['venda_alvo'] == 0.0) &
@@ -122,15 +122,3 @@ class TPct(IStrategy):
             ['exit_long', 'venda_alvo']] = (1, 0.0)
 
         return dataframe
-
-# def custom_exit(self, pair: str, trade: 'Trade', current_time: 'datetime', current_rate: float,
-#                     current_profit: float, **kwargs):
-#         # Between 2% and 10%, sell if EMA-long above EMA-short
-#         if current_profit > 0.005:
-#             return 'sell'
-
-#         # Sell any positions at a loss if they are held for more than one day.
-#         if current_profit < 0.0 and (current_time - trade.open_date_utc).days >= 1:
-#             return 'sell'
-
-#         return False
